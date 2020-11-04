@@ -49,15 +49,15 @@
 #define CCMR_CHAN1  0b0000000001110000
 #define CCMR_CHAN2  0b0111000000000000
 #define CCMR_CHAN3  0b0000000001110000
-#define PWM_CHAN1_FORCE_ACTIVE  0b0000000001010000
-#define PWM_CHAN2_FORCE_ACTIVE  0b0101000000000000
-#define PWM_CHAN3_FORCE_ACTIVE  0b0000000001010000
-#define PWM_CHAN1_FORCE_INACTIVE  0b0000000001000000
-#define PWM_CHAN2_FORCE_INACTIVE  0b0100000000000000
-#define PWM_CHAN3_FORCE_INACTIVE  0b0000000001000000
-#define PWM_CHAN1_MODE1  0b0000000001100000
-#define PWM_CHAN2_MODE1  0b0110000000000000
-#define PWM_CHAN3_MODE1  0b0000000001100000
+#define PWM_CHAN_U_FORCE_ACTIVE  0b0000000001010000
+#define PWM_CHAN_V_FORCE_ACTIVE  0b0101000000000000
+#define PWM_CHAN_W_FORCE_ACTIVE  0b0000000001010000
+#define PWM_CHAN_U_FORCE_INACTIVE  0b0000000001000000
+#define PWM_CHAN_V_FORCE_INACTIVE  0b0100000000000000
+#define PWM_CHAN_W_FORCE_INACTIVE  0b0000000001000000
+#define PWM_CHAN_U_MODE1  0b0000000001100000
+#define PWM_CHAN_V_MODE1  0b0110000000000000
+#define PWM_CHAN_W_MODE1  0b0000000001100000
 
 /* USER CODE END PD */
 
@@ -282,18 +282,21 @@ void TIM2_IRQHandler(void)
   temp_CCMR2 &= !CCMR_CHAN2;
   temp_CCMR2 &= !CCMR_CHAN3;
 
-  temp_CCMR1 |= PWM_CHAN1_FORCE_ACTIVE | PWM_CHAN2_FORCE_ACTIVE;
-  temp_CCMR2 |= PWM_CHAN3_FORCE_ACTIVE;
+  /* set all channels to their forced inactive state */
+  //temp_CCMR1 |= PWM_CHAN1_FORCE_INACTIVE | PWM_CHAN2_FORCE_INACTIVE;
+  //temp_CCMR2 |= PWM_CHAN3_FORCE_INACTIVE;
+  //temp_CCMR1 |= PWM_CHAN1_FORCE_ACTIVE | PWM_CHAN2_FORCE_ACTIVE;
+  //temp_CCMR2 |= PWM_CHAN3_FORCE_ACTIVE;
 
 
   /* clear the existing value */
- TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCx_DISABLE);
- TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCx_DISABLE);
- TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_3, TIM_CCx_DISABLE);
-
- TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCxN_DISABLE);
- TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCxN_DISABLE);
- TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_3, TIM_CCxN_DISABLE);
+   TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
+   TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
+   TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_3, TIM_CCx_ENABLE);
+  
+   TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCxN_ENABLE);
+   TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCxN_ENABLE);
+   TIM_CCxNChannelCmd(htim1.Instance, TIM_CHANNEL_3, TIM_CCxN_ENABLE);
 
 
   /*
@@ -312,40 +315,95 @@ void TIM2_IRQHandler(void)
   {
   case 6:
 	   /* Hall CBA = 110, Phase W1, V2 = high */
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_ENABLE);
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_V2, TIM_CCxN_ENABLE);
-	  //temp_CCMR2 &= !CCMR_CHAN3;
-	  //temp_CCMR2 |= PWM_CHAN3_FORCE_MODE1;
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_DISABLE);
+      
+      /* W = chan3 set to pwm1 mode */
+      temp_CCMR2 |= PWM_CHAN_W_MODE1;
+      /* V = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_V_MODE1;
+
+      temp_CCMR1 |= PWM_CHAN_U_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_DISABLE);
+
 	  break;
   case 4:
 	   /* Hall CBA = 100, Phase U1, V2 = high */
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_ENABLE);
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_V2, TIM_CCxN_ENABLE);
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_DISABLE);
+
+      /* U = chan3 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_U_MODE1;
+      /* V = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_V_MODE1;
+      
+      temp_CCMR2 |= PWM_CHAN_W_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_DISABLE);
+
 	  break;
   case 5:
 	  /* Hall CBA = 101, Phase W2, U1 = high */
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_W2, TIM_CCxN_ENABLE);
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_ENABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_DISABLE);
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_U2, TIM_CCxN_DISABLE);
+
+      /* W = chan3 set to pwm1 mode */
+      temp_CCMR2 |= PWM_CHAN_W_MODE1;
+      /* U = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_U_MODE1;
+
+      temp_CCMR1 |= PWM_CHAN_V_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_DISABLE);
+
 	  break;
   case 1:
 	  /* Hall CBA = 001, Phase W2, V1 = high */
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_W2, TIM_CCxN_ENABLE);
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_ENABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_DISABLE);
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_V2, TIM_CCxN_DISABLE);
+
+      /* W = chan3 set to pwm1 mode */
+      temp_CCMR2 |= PWM_CHAN_W_MODE1;
+      /* V = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_V_MODE1;
+
+      temp_CCMR1 |= PWM_CHAN_U_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_DISABLE);
+      
 	  break;
   case 3:
 	  /* Hall CBA = 011, Phase V1, U2 = high */
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_ENABLE);
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_U2, TIM_CCxN_ENABLE);
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_V2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_DISABLE);
+
+      /* V = chan3 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_V_MODE1;
+      /* U = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_U_MODE1;
+
+      temp_CCMR2 |= PWM_CHAN_W_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_DISABLE);
+
 	  break;
   case 2:
 	  /* Hall CBA = 010, Phase W1, U2 = high */
-	  TIM_CCxChannelCmd(htim1.Instance, PHASE_W1, TIM_CCx_ENABLE);
-	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_U2, TIM_CCxN_ENABLE);
+	  TIM_CCxNChannelCmd(htim1.Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_U1, TIM_CCx_DISABLE);
+
+      /* W = chan3 set to pwm1 mode */
+      temp_CCMR2 |= PWM_CHAN_W_MODE1;
+      /* U = chan2 set to pwm1 mode */
+      temp_CCMR1 |= PWM_CHAN_U_MODE1;
+
+      temp_CCMR1 |= PWM_CHAN_V_FORCE_INACTIVE;
+	  TIM_CCxChannelCmd(htim1.Instance, PHASE_V1, TIM_CCx_DISABLE);
+
 	  break;
   }
 
-  //htim1.Instance->CCMR1 = temp_CCMR1;
-  //htim1.Instance->CCMR2 = temp_CCMR2;
+  /*
+   * write the control bits for pwm-mode/force output 
+   */
+  htim1.Instance->CCMR1 = temp_CCMR1;
+  htim1.Instance->CCMR2 = temp_CCMR2;
 
   /* USER CODE END TIM2_IRQn 1 */
 }
