@@ -84,6 +84,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
     adc_val_1 = adc_buffer[0];
     adc_val_2 = adc_buffer[1];
 
+    /*
+     * set the pwm duty cycle from the throttle potentiometer
+     */
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, adc_buffer[0]);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, adc_buffer[0]);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, adc_buffer[0]);
     //printf("%u \r\n", adc_val_1);
     printf("%u %u\r\n", adc_val_1, adc_val_2);
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -271,7 +277,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 2370;
+  htim1.Init.Prescaler = 70;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 255;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -334,9 +340,9 @@ static void MX_TIM1_Init(void)
   }
   /* USER CODE BEGIN TIM1_Init 2 */
   /* set up the pwm outputs to 50% duty cycle for testing */
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 85U);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 85U);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 85U);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 255U);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 255U);
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 255U);
 
   /*
    * set the OSSR bit in the BDTR register.
