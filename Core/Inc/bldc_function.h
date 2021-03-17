@@ -60,12 +60,19 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
    * and pack them into a single variable
    */
   int hall_value = 0;
+//  /* hall A PA15*/
+//  hall_value = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15);
+//  /* hall B PB3*/
+//  hall_value = (hall_value << 1) | HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+//  /* hall C PB10*/
+//  hall_value = (hall_value << 1) | HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);
+
   /* hall A PA15*/
-  hall_value = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15);
+  hall_value = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);
   /* hall B PB3*/
   hall_value = (hall_value << 1) | HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
   /* hall C PB10*/
-  hall_value = (hall_value << 1) | HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10);
+  hall_value = (hall_value << 1) | HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15);
 
 
   /* this is a mask for accessing the OCxM bits that
