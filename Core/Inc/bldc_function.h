@@ -96,13 +96,13 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
 
 
   /* clear the existing value */
-   TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
-   TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
-   TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_3, TIM_CCx_ENABLE);
+   //TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
+   //TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
+   //TIM_CCxChannelCmd(pwm_timer->Instance, TIM_CHANNEL_3, TIM_CCx_ENABLE);
   
-   TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_1, TIM_CCxN_ENABLE);
-   TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_2, TIM_CCxN_ENABLE);
-   TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_3, TIM_CCxN_ENABLE);
+   //TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_1, TIM_CCxN_ENABLE);
+   //TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_2, TIM_CCxN_ENABLE);
+   //TIM_CCxNChannelCmd(pwm_timer->Instance, TIM_CHANNEL_3, TIM_CCxN_ENABLE);
 
 
   /*
@@ -122,21 +122,33 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
   case 6:
 	   /* Hall CBA = 110, Phase W1, V2 = high */
 	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_ENABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
       
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
+
       /* W = chan3 set to pwm1 mode */
       temp_CCMR2 |= PWM_CHAN_W_MODE1;
       /* V = chan2 set to pwm1 mode */
       temp_CCMR1 |= PWM_CHAN_V_MODE1;
 
       temp_CCMR1 |= PWM_CHAN_U_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
 
 	  break;
   case 4:
 	   /* Hall CBA = 100, Phase U1, V2 = high */
-	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCxN_DISABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_ENABLE);
 
       /* U = chan3 set to pwm1 mode */
       temp_CCMR1 |= PWM_CHAN_U_MODE1;
@@ -144,13 +156,19 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
       temp_CCMR1 |= PWM_CHAN_V_MODE1;
       
       temp_CCMR2 |= PWM_CHAN_W_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
 
 	  break;
   case 5:
 	  /* Hall CBA = 101, Phase W2, U1 = high */
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
+
 	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_ENABLE);
 
       /* W = chan3 set to pwm1 mode */
       temp_CCMR2 |= PWM_CHAN_W_MODE1;
@@ -158,13 +176,19 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
       temp_CCMR1 |= PWM_CHAN_U_MODE1;
 
       temp_CCMR1 |= PWM_CHAN_V_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
 
 	  break;
   case 1:
 	  /* Hall CBA = 001, Phase W2, V1 = high */
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
+
 	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_ENABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
 
       /* W = chan3 set to pwm1 mode */
       temp_CCMR2 |= PWM_CHAN_W_MODE1;
@@ -172,12 +196,18 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
       temp_CCMR1 |= PWM_CHAN_V_MODE1;
 
       temp_CCMR1 |= PWM_CHAN_U_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
       
 	  break;
   case 3:
 	  /* Hall CBA = 011, Phase V1, U2 = high */
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
+
 	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_ENABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
 
       /* V = chan3 set to pwm1 mode */
@@ -186,12 +216,18 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
       temp_CCMR1 |= PWM_CHAN_U_MODE1;
 
       temp_CCMR2 |= PWM_CHAN_W_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_DISABLE);
 
 	  break;
   case 2:
 	  /* Hall CBA = 010, Phase W1, U2 = high */
 	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_W2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_W1, TIM_CCx_ENABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_V2, TIM_CCxN_DISABLE);
+	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
+
+	  TIM_CCxNChannelCmd(pwm_timer->Instance, PHASE_U2, TIM_CCxN_ENABLE);
 	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_U1, TIM_CCx_DISABLE);
 
       /* W = chan3 set to pwm1 mode */
@@ -200,7 +236,7 @@ inline void bldc_update(TIM_HandleTypeDef *pwm_timer)
       temp_CCMR1 |= PWM_CHAN_U_MODE1;
 
       temp_CCMR1 |= PWM_CHAN_V_FORCE_INACTIVE;
-	  TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
+	  //TIM_CCxChannelCmd(pwm_timer->Instance, PHASE_V1, TIM_CCx_DISABLE);
 
 	  break;
   }
