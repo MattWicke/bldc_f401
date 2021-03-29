@@ -135,9 +135,9 @@ int main(void)
   HAL_TIM_OC_Start_IT(&htim2,TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim5);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, 2);
 
   bldc_update(&htim1);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, 2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -280,7 +280,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 70;
+  htim1.Init.Prescaler = 300;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 255;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

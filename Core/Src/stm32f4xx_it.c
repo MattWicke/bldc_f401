@@ -85,11 +85,15 @@
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim5;
+extern DMA_HandleTypeDef hdma_usart2_tx;
+/* USER CODE BEGIN EV */
+extern DMA_HandleTypeDef hdma_adc1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim2;
 extern DMA_HandleTypeDef hdma_usart2_tx;
-/* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
 
