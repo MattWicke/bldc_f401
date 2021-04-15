@@ -6,3 +6,5 @@
 *.map
 *.mk
 *.swp
+Debug/objects.list
+NUCLEO-F401RE.xml
