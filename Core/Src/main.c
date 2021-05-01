@@ -80,6 +80,7 @@ int __io_putchar(int ch)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
+    float scale = 1.9;
     uint8_t adc_val_1, adc_val_2;
     // copy the values locally because the adc is running continously and they might change
     adc_val_1 = adc_buffer[0];
@@ -87,10 +88,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 
     /*
      * set the pwm duty cycle from the throttle potentiometer
+     *
+     * note: when using IN6 on PC1 the adc buffer index is 1
+     * when using IN4 on PA4 the adc buffer index is 0
      */
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, adc_buffer[0]);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, adc_buffer[0]);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, adc_buffer[0]);
+
+    /*
+     * scale the value 
+     */
+    if(adc_val_2 >= 63 && adc_val_2 <= 195)
+    {
+        adc_val_2 -= 63;
+	adc_val_2 *= scale;
+    }
+    else
+    {
+        adc_val_2 = 0;
+        printf("bang %u \r\n", adc_val_2);
+    }
+
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, adc_val_2);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, adc_val_2);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, adc_val_2);
     //printf("%u \r\n", adc_val_1);
     printf("%u %u\r\n", adc_val_1, adc_val_2);
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -237,7 +256,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Channel = ADC_CHANNEL_6;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
